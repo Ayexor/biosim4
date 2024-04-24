@@ -14,7 +14,7 @@ set output "./images/log.png"
 
 set mxtics
 set ytics autofreq nomirror tc lt 2
-set yrange [ 0:8000 ]
+set yrange [ 0:1 ]
 set y2range [ 0:1 ]
 set y2tics autofreq nomirror tc lt 1
 set grid

@@ -226,11 +226,18 @@ std::pair<bool, float> passedSurvivalCriterion(const Indiv &indiv, unsigned chal
             : std::pair<bool, float> { false, 0.0 };
 
     // Survivors are those within radius of any barrier center. Weighted by distance.
+    // At the wall, they die.
     case CHALLENGE_NEAR_BARRIER:
         {
+            bool onEdge = indiv.loc.x == 0 || indiv.loc.x == p.sizeX - 1
+                       || indiv.loc.y == 0 || indiv.loc.y == p.sizeY - 1;
+
+            if (onEdge)
+                return { false, 0.0 };
+
             float radius;
-            //radius = 20.0;
-            radius = p.sizeX / 2;
+            radius = 5.0;
+            //radius = p.sizeX / 2;
             //radius = p.sizeX / 4;
 
             const std::vector<Coord> barrierCenters = grid.getBarrierCenters();
@@ -242,7 +249,9 @@ std::pair<bool, float> passedSurvivalCriterion(const Indiv &indiv, unsigned chal
                 }
             }
             if (minDistance <= radius) {
-                return { true, 1.0 - (minDistance / radius) };
+                float score = minDistance / radius;
+                score *= score;
+                return { true, 1.0 - score };
             } else {
                 return { false, 0.0 };
             }

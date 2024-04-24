@@ -53,10 +53,14 @@ void Grid::createBarrier(unsigned barrierType)
     // Vertical bar in random location
     case 2:
         {
-            int16_t minX = randomUint(20, p.sizeX - 20);
-            int16_t maxX = minX + 1;
-            int16_t minY = randomUint(20, p.sizeY / 2 - 20);
-            int16_t maxY = minY + p.sizeY / 2;
+            int16_t midX = randomUint(p.sizeX / 10, p.sizeX - p.sizeX / 10);
+            int16_t midY = randomUint(p.sizeY / 4, p.sizeY - p.sizeY / 4);
+            int16_t minX = midX - 1;
+            int16_t maxX = midX + 1;
+            int16_t minY = midY - p.sizeY / 4;
+            int16_t maxY = midY + p.sizeY / 4;
+
+            barrierCenters.push_back({midX, midY});
 
             for (int16_t x = minX; x <= maxX; ++x) {
                 for (int16_t y = minY; y <= maxY; ++y) {
@@ -117,40 +121,37 @@ void Grid::createBarrier(unsigned barrierType)
     // Three floating islands -- different locations every generation
     case 5:
         {
-            float radius = 3.0;
-            unsigned margin = 2 * (int)radius;
+            float radius = 3;
+            unsigned margin = radius * 4;
+            const unsigned numIslands = 12;
+            std::vector<Coord> centers(numIslands);
 
             auto randomLoc = [&]() {
-//                return Coord( (int16_t)randomUint((int)radius + margin, p.sizeX - ((float)radius + margin)),
-//                              (int16_t)randomUint((int)radius + margin, p.sizeY - ((float)radius + margin)) );
                 return Coord( (int16_t)randomUint(margin, p.sizeX - margin),
                               (int16_t)randomUint(margin, p.sizeY - margin) );
             };
 
-            Coord center0 = randomLoc();
-            Coord center1;
-            Coord center2;
+            bool placementValid = false;
+            while ( ! placementValid) {
+                for (unsigned idx = 0; idx < numIslands; ++idx)
+                    centers[idx] = randomLoc();
 
-            do {
-                center1 = randomLoc();
-            } while ((center0 - center1).length() < margin);
-
-            do {
-                center2 = randomLoc();
-            } while ((center0 - center2).length() < margin || (center1 - center2).length() < margin);
-
-            barrierCenters.push_back(center0);
-            //barrierCenters.push_back(center1);
-            //barrierCenters.push_back(center2);
+                placementValid = true;
+                for (unsigned a = 0; a < numIslands - 1; ++a)
+                    for (unsigned b = a + 1; b < numIslands; ++b)
+                        if ( (centers[a] - centers[b]).length() < margin)
+                            placementValid = false;
+            }
 
             auto f = [&](Coord loc) {
                 grid.set(loc, BARRIER);
                 barrierLocations.push_back(loc);
             };
 
-            visitNeighborhood(center0, radius, f);
-            //visitNeighborhood(center1, radius, f);
-            //visitNeighborhood(center2, radius, f);
+            for (unsigned idx = 0; idx < numIslands; ++idx) {
+                barrierCenters.push_back(centers[idx]);
+                visitNeighborhood(centers[idx], radius, f);
+            }
         }
         break;
 

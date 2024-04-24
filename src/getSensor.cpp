@@ -174,12 +174,43 @@ unsigned longProbePopulationFwd(Coord loc, Dir dir, unsigned longProbeDist)
 // If the distance to the border is less than the longProbeDist distance
 // and no barriers are found, returns longProbeDist.
 // Returns 0..longProbeDist.
-unsigned longProbeBarrierFwd(Coord loc, Dir dir, unsigned longProbeDist)
+// Edit: Search in a 30 deg cone instead of on a line
+unsigned longProbeBarrierFwd(Coord loc, Dir dir, int longProbeDist)
 {
     assert(longProbeDist > 0);
-    unsigned count = 0;
-    loc = loc + dir;
-    unsigned numLocsToTest = longProbeDist;
+    const auto& barrierCentres = grid.getBarrierCenters();
+    unsigned minDist = longProbeDist;
+    float dist;
+    float raySameness;
+    Coord diff;
+    for (auto& centre : barrierCentres) {
+        diff = loc - centre;
+        raySameness = diff.raySameness(dir);
+        if (raySameness >= 0.7) {
+            dist = diff.length() * raySameness;
+            if (dist < minDist) {
+                minDist = dist;
+            }
+        }
+    }
+    return minDist;
+
+    /*
+    //unsigned count = 0;
+    Coord testLoc;
+    Coord dir = _dir.asNormalizedCoord();
+    Coord perpDir = _dir.rotate90DegCCW().asNormalizedCoord();
+    //unsigned numLocsToTest = longProbeDist;
+    for (int dist = 1; dist <= longProbeDist; ++dist) {
+        for (int perpDist = -dist/2; perpDist <= dist/2; ++perpDist) {
+            testLoc = loc + dir * dist + perpDir * perpDist ;
+            if (grid.isInBounds(testLoc) && grid.isBarrierAt(testLoc))
+                return dist;
+        }
+    }
+    return longProbeDist;
+    */
+    /*
     while (numLocsToTest > 0 && grid.isInBounds(loc) && !grid.isBarrierAt(loc)) {
         ++count;
         loc = loc + dir;
@@ -190,6 +221,7 @@ unsigned longProbeBarrierFwd(Coord loc, Dir dir, unsigned longProbeDist)
     } else {
         return count;
     }
+    */
 }
 
 

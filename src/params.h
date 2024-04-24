@@ -38,7 +38,7 @@ struct Params {
     float populationSensorRadius; // > 0.0
     unsigned signalSensorRadius; // > 0
     float responsiveness; // >= 0.0
-    unsigned responsivenessCurveKFactor; // 1, 2, 3, or 4
+    float responsivenessCurveKFactor; // >= 1
     unsigned longProbeDistance; // > 0
     unsigned shortProbeBarrierDistance; // > 0
     float valenceSaturationMag;

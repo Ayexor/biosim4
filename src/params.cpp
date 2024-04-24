@@ -47,7 +47,7 @@ void ParamManager::setDefaults()
     privParams.populationSensorRadius = 2.5;
     privParams.signalSensorRadius = 2.0;
     privParams.responsiveness = 0.5;
-    privParams.responsivenessCurveKFactor = 2;
+    privParams.responsivenessCurveKFactor = 1.5;
     privParams.longProbeDistance = 16;
     privParams.shortProbeBarrierDistance = 4;
     privParams.valenceSaturationMag = 0.5;
@@ -204,7 +204,7 @@ void ParamManager::ingestParameter(std::string name, std::string val)
         else if (name == "responsiveness" && isFloat && dVal >= 0.0) {
             privParams.responsiveness = dVal; break;
         }
-        else if (name == "responsivenesscurvekfactor" && isUint && uVal >= 1 && uVal <= 20) {
+        else if (name == "responsivenesscurvekfactor" && isFloat && dVal >= 1.0 && dVal <= 20) {
             privParams.responsivenessCurveKFactor = uVal; break;
         }
         else if (name == "longprobedistance" && isUint && uVal > 0) {
@@ -295,7 +295,7 @@ void ParamManager::updateFromConfigFile(unsigned generationNumber)
                 }
                 else if (activeFromGeneration == generationNumber) {
                     // Parameter value became active at exactly this generation number
-                    privParams.parameterChangeGenerationNumber = generationNumber; 
+                    privParams.parameterChangeGenerationNumber = generationNumber;
                 }
                 name = name.substr(0, generationDelimiterPos);
             }

@@ -28,7 +28,8 @@ bool prob2bool(float factor)
 float responseCurve(float r)
 {
     const float k = p.responsivenessCurveKFactor;
-    return std::pow((r - 2.0), -2.0 * k) - std::pow(2.0, -2.0 * k) * (1.0 - r);
+    //return std::pow((r - 2.0), -2.0 * k) - std::pow(2.0, -2.0 * k) * (1.0 - r);
+    return std::pow(r, k);
 }
 
 

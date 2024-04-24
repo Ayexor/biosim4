@@ -281,7 +281,7 @@ void appendEpochLog(unsigned generation, unsigned numberSurvivors, unsigned murd
     foutput.open(p.logDir + "/epoch-log.txt", std::ios::app);
 
     if (foutput.is_open()) {
-        foutput << generation << " " << numberSurvivors << " " << geneticDiversity()
+        foutput << generation << " " << ((double)numberSurvivors) / p.population << " " << geneticDiversity()
                 << " " << averageGenomeLength() << " " << murderCount << std::endl;
     } else {
         assert(false);
